@@ -38,7 +38,7 @@ button {
 
 <script>
 
- chart("fixedmedDatesPart.csv", "orange");
+ chart("fixedmedDates.csv", "orange");
 // chart("medicalRecordsUTF8.csv", "orange");
 // chart("data.csv", "orange");
 var datearray = [];
@@ -98,7 +98,7 @@ var yAxisr = d3.svg.axis()
 var stack = d3.layout.stack()
     .offset("silhouette")
     .values(function(d) { return d.values; })
-    .x(function(d) { return d.date; })
+    .x(function(d) { return d.visit; })
     .y(function(d) { return d.value; });
 
 var nest = d3.nest()
@@ -106,7 +106,7 @@ var nest = d3.nest()
 
 var area = d3.svg.area()
     .interpolate("cardinal")
-    .x(function(d) { return x(d.date); })
+    .x(function(d) { return x(d.visit); })
     .y0(function(d) { return y(d.y0); })
     .y1(function(d) { return y(d.y0 + d.y); });
 
@@ -123,9 +123,10 @@ function onlyUnique(value, index, self) {
 var graph = d3.csv(csvpath, function(data) {
   var maxTimeSteps = -1;
   var allDates=[];
-  data.forEach(function(d) {
+  data.forEach(function(d,i) {
     d.date = format.parse(d.date);
     d.value = +d.value;
+    d.visit = +d.visit;
   });
   // transform data to a matrix (rows: date, columns: keys)
 
@@ -170,14 +171,16 @@ var graph = d3.csv(csvpath, function(data) {
   return [
     d.key, // Assuming d.year is a Date object.
     d.value,
-    d.date
+    d.date,
+    d.visit
   ];
     }));
     console.log(csvstring);
 
   var layers = stack(nest.entries(data));
 
-  x.domain(d3.extent(data, function(d) { return d.date; }));
+//   x.domain(d3.extent(data, function(d) { return d.date; }));
+x.domain(d3.extent(data, function(d) { return d.visit; }));
   y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
 
 //   svg.selectAll(".layer")
