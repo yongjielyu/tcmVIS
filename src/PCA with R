@@ -1,0 +1,13 @@
+summary(df)
+
+imPrComp = prcomp(df[,c(2:47)], center = TRUE,scale. = TRUE)
+
+summary(imPrComp)
+
+
+library(devtools)
+remotes::install_github('vqv/ggbiplot')
+
+library(ggbiplot)
+
+ggbiplot(imPrComp)
